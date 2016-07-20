@@ -1,0 +1,392 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+1] Create Home Directory on Local File System under /home/cloudera 
+ a. Name it as “localdata” 
+ b. Check and confirm the directory exists  
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hadoop fs -mkdir /user/cloudera/localdata
+
+$ hadoop fs -ls
+---------Output-------------
+Found 7 items
+drwxr-xr-x   - cloudera cloudera          0 2016-06-25 10:06 .Trash
+-rw-r--r--   1 cloudera cloudera       9216 2016-06-27 07:17 alphabets.txt
+-rw-r--r--   1 cloudera cloudera         49 2016-06-25 05:56 input.txt
+drwxr-xr-x   - cloudera cloudera          0 2016-07-04 03:37 localdata   <-------
+drwxr-xr-x   - cloudera cloudera          0 2016-07-03 23:58 retail_db
+drwxr-xr-x   - cloudera cloudera          0 2016-06-27 07:40 sizeandcountOutput
+drwxr-xr-x   - cloudera cloudera          0 2016-06-25 06:56 user
+----------------------------
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+2] Create another Directory on HDFS File System under /user.  
+a. Name it as “hddata” 
+b. Create one more Directory below “hddata”. Name this as “input” 
+c. Check and confirm the directory exists  
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hadoop fs -mkdir /user/hddata
+
+$ hadoop fs -ls /user/
+
+------------Output----------------
+Found 10 items
+drwxr-xr-x   - cloudera cloudera            0 2016-07-04 04:02 /user/cloudera
+drwxr-xr-x   - cloudera supergroup          0 2016-07-04 04:20 /user/hddata   <-------
+drwxr-xr-x   - hdfs     supergroup          0 2016-06-25 05:59 /user/hdfs
+drwxr-xr-x   - mapred   hadoop              0 2016-04-06 01:25 /user/history
+drwxrwxrwx   - hive     supergroup          0 2016-04-06 01:27 /user/hive
+drwxrwxrwx   - hue      supergroup          0 2016-04-06 01:26 /user/hue
+drwxrwxrwx   - jenkins  supergroup          0 2016-04-06 01:25 /user/jenkins
+drwxrwxrwx   - oozie    supergroup          0 2016-04-06 01:26 /user/oozie
+drwxrwxrwx   - root     supergroup          0 2016-04-06 01:25 /user/root
+drwxr-xr-x   - hdfs     supergroup          0 2016-04-06 01:27 /user/spark
+-----------------------------------
+
+$ hadoop fs -mkdir /user/hddata/input
+
+$ hadoop fs -ls /user/hddata/
+-------------Output-------------------
+Found 1 items
+drwxr-xr-x   - cloudera supergroup          0 2016-07-04 04:24 /user/hddata/input  <-----------
+--------------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+3. Copy the provided file (“newstext.txt”) from your Windows Machine into the “localdata” directory that you created in 
+step 1. 
+
+4. Check and confirm the file is copied into the “localdata”. 
+7. Copy “newstext.txt” from local directory to HDFS File System under /user/localdata/input. Confirm the file is copied. 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Drag and drop to Desktop of Cloudera
+
+$ hadoop fs -copyFromLocal /home/cloudera/Desktop/newstext.txt /user/cloudera/localdata/news.txt
+
+$ hadoop fs -ls /user/cloudera/localdata/
+-----------------------------------------
+-rw-r--r--   1 cloudera cloudera       3045 2016-07-04 04:43 /user/cloudera/localdata/news.txt <-----Copied and renamed to news.txt
+------------------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+5. Check Disk usage and free space on HDFS file system. 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hadoop fs -du
+---------Output------------------
+1361132  1361132  .Trash
+9216     9216     alphabets.txt
+49       49       input.txt
+3045     3045     localdata
+60837    60837    retail_db
+19045    19045    sizeandcountOutput
+56       56       user
+----------------------------------
+
+$ hdfs dfsadmin -report
+
+----------------output------------------
+Configured Capacity: 58531520512 (54.51 GB)
+Present Capacity: 47067709606 (43.84 GB)
+DFS Remaining: 46213849254 (43.04 GB)
+DFS Used: 853860352 (814.30 MB)
+DFS Used%: 1.81%
+Under replicated blocks: 0
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+Missing blocks (with replication factor 1): 0
+-------------------------------------------------
+Live datanodes (1):
+
+Name: 127.0.0.1:50010 (quickstart.cloudera)
+Hostname: quickstart.cloudera
+Decommission Status : Normal
+Configured Capacity: 58531520512 (54.51 GB)
+DFS Used: 853860352 (814.30 MB)
+Non DFS Used: 11463810906 (10.68 GB)
+DFS Remaining: 46213849254 (43.04 GB)
+DFS Used%: 1.46%
+DFS Remaining%: 78.96%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 6
+Last contact: Mon Jul 04 04:48:57 PDT 2016
+------------------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+6. Check the displays sizes of files and directories under “/user” on HDFS 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hadoop fs -du -h  /user
+-----------------------
+1.4 M    1.4 M    /user/cloudera
+0        0        /user/hddata
+0        0        /user/hdfs
+0        0        /user/history
+459.6 K  459.6 K  /user/hive
+0        0        /user/hue
+0        0        /user/jenkins
+799.0 M  799.0 M  /user/oozie
+0        0        /user/root
+0        0        /user/spark
+-------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+8. See the content of the file “newstext.txt”. Also, see the last lines of the content in the file
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hadoop fs -cat /user/cloudera/localdata/news.txt
+-----------------Output------------------
+Two persons were arrested on Monday in connection with the Bangladesh’s worst terror attack at a cafe in Dhaka in which 22 people, mostly foreigners, were brutally killed by suspected ISIS militants, as authorities stepped up probe into the international links of the hostage-takers.
+
+Inspector General of Police (IGP) A.K.M. Shahidul Haque, however, did not disclose the identities of either of the detainees or where they were being kept.
+
+He said both of them were unwell and will be quizzed after their condition improves.
+
+“One of them is in hospital, the other is in custody,” he said.
+
+Earlier, Prime Minister Sheikh Hasina and the Bangladesh Army said one terrorist was captured alive from the site of the attack. However, the identity of the suspect was not disclosed.
+
+“They (attackers) may have some contact with international terrorist groups,” he said.
+
+Islamic State (IS) has claimed responsibility for the killing of the 20 hostages and two police officers during the 12-hour siege that ended after the Army stormed the Holey Artisan Bakery popular with expats in the diplomatic zone here, killing six attackers and capturing one alive.
+
+Hostages who were killed include 19-year-old Indian girl Tarishi Jain. Nine Italians, 7 Japanese, one American of Bangladeshi origin, and two Bangladeshis were also among the people who were killed.
+
+“You have seen the pictures of the slain militants supplied to the media, we have found out the background of four of them,” a senior police officer familiar with the investigation said, preferring anonymity.
+
+The official added that all the attackers were in their 20s. Four of them came from wealthy families and studied at elite schools and universities in Dhaka and abroad.
+
+One of the slain assaulters was studying in a Malaysian university, while his family said they had no idea that he returned home and took part in the attack.
+
+He said the fifth youth who hailed from a village in northwestern Bogra and studied in a madrassa there led the attackers during the Friday night’s massacre.
+
+“This Khairul (of Bogra) was wanted by police for the past seven months for three deadly militant attacks in northwestern region...We understand it is him who led the Holey Artisan restaurant attack on that night,” the official said.
+
+According to mass circulation Prothom Alo Khairul was missing for the past several months. Bogra police had detained his parents for questioning.
+
+One of slain attackers, private BRAC university student Rohan Imtiaz, was the son of a leader of Prime Minister Sheikh Hasina’s ruling Awami League, while his mother was a teacher Dhaka’s posh Scholastica School.
+
+The family reported him missing in December last year.
+
+Of the five pictures of five bodies provided by police, four appeared to be the ones seen in the photos published by SITE in which the youths were seen smiling in front of an Islamic State black flag.
+
+Keywords: Dhaka terror attack, Tarishi Jain, terrorism, Holey Artisan Bakery, O'Kitchen Restaurant, Islamic State
+----------------------------------------------
+
+$ hadoop fs -tail /user/cloudera/localdata/news.txt
+-------------------Output-----------------------
+ckers during the Friday night’s massacre.
+
+“This Khairul (of Bogra) was wanted by police for the past seven months for three deadly militant attacks in northwestern region...We understand it is him who led the Holey Artisan restaurant attack on that night,” the official said.
+
+According to mass circulation Prothom Alo Khairul was missing for the past several months. Bogra police had detained his parents for questioning.
+
+One of slain attackers, private BRAC university student Rohan Imtiaz, was the son of a leader of Prime Minister Sheikh Hasina’s ruling Awami League, while his mother was a teacher Dhaka’s posh Scholastica School.
+
+The family reported him missing in December last year.
+
+Of the five pictures of five bodies provided by police, four appeared to be the ones seen in the photos published by SITE in which the youths were seen smiling in front of an Islamic State black flag.
+
+Keywords: Dhaka terror attack, Tarishi Jain, terrorism, Holey Artisan Bakery, O'Kitchen Restaurant, Islamic State
+------------------------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+9. Now, Copy “news.txt” in your “input’ directory with another name “newnews.txt”
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hadoop fs -cp /user/cloudera/localdata/news.txt /user/hddata/input/news.txt
+
+$ hadoop fs -ls /user/hddata/input
+---------------------------------
+Found 1 items
+-rw-r--r--   1 cloudera supergroup       3045 2016-07-04 05:22 /user/hddata/input/news.txt
+----------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+10.  Change Ownership from “cloudera” to “hdfs”. Change it back to “cloudera” 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+$ hadoop fs -ls /user/hddata/input
+---------------------------------
+Found 1 items
+-rw-r--r--   1 cloudera supergroup       3045 2016-07-04 05:22 /user/hddata/input/news.txt
+----------------------------------
+
+$ hadoop fs -chown hdfs /user/hddata/input/news.txt 
+--------------super user is required-----
+chown: changing ownership of '/user/hddata/input/news.txt': Non-super user cannot change owner
+--------------
+
+$ sudo -u hdfs hadoop fs -chown hdfs /user/hddata/input/news.txt
+$ hadoop fs -ls /user/hddata/input
+--------Output------------
+Found 1 items
+-rw-r--r--   1 hdfs supergroup       3045 2016-07-04 05:22 /user/hddata/input/news.txt
+---------------------------
+
+$ sudo -u hdfs hadoop fs -chown cloudera /user/hddata/input/news.txt
+$ hadoop fs -ls /user/hddata/input
+----------Output-----------
+Found 1 items
+-rw-r--r--   1 cloudera supergroup       3045 2016-07-04 05:22 /user/hddata/input/news.txt
+--------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+14. Change group ownership from “supergroup” to group “cloudera” 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ sudo -u hdfs hadoop fs -chgrp cloudera /user/hddata/input/news.txt
+$ hadoop fs -ls /user/hddata/input
+----------------------------
+Found 1 items
+-rw-r--r--   1 cloudera cloudera       3045 2016-07-04 05:22 /user/hddata/input/news.txt
+----------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+15. Run a DFS File System Check   
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hdfs fsck / 
+--------------Output---------------
+Connecting to namenode via http://quickstart.cloudera:50070
+FSCK started by cloudera (auth:SIMPLE) from /127.0.0.1 for path / at Mon Jul 04 05:51:30 PDT 2016
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+...............Status: HEALTHY
+ Total size:	842221405 B (Total open files size: 166 B)
+ Total dirs:	156
+ Total files:	1015
+ Total symlinks:		0 (Files currently being written: 3)
+ Total blocks (validated):	989 (avg. block size 851588 B) (Total open file blocks (not validated): 2)
+ Minimally replicated blocks:	989 (100.0 %)
+ Over-replicated blocks:	0 (0.0 %)
+ Under-replicated blocks:	0 (0.0 %)
+ Mis-replicated blocks:		0 (0.0 %)
+ Default replication factor:	1
+ Average block replication:	1.0
+ Corrupt blocks:		0
+ Missing replicas:		0 (0.0 %)
+ Number of data-nodes:		1
+ Number of racks:		1
+FSCK ended at Mon Jul 04 05:51:31 PDT 2016 in 905 milliseconds
+
+
+The filesystem under path '/' is HEALTHY
+-------------------------------------
+
+
+$ hdfs dfsadmin -report
+----------Output--------------
+Configured Capacity: 58531520512 (54.51 GB)
+Present Capacity: 47066550438 (43.83 GB)
+DFS Remaining: 46212681894 (43.04 GB)
+DFS Used: 853868544 (814.31 MB)
+DFS Used%: 1.81%
+Under replicated blocks: 0
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+Missing blocks (with replication factor 1): 0
+
+-------------------------------------------------
+Live datanodes (1):
+
+Name: 127.0.0.1:50010 (quickstart.cloudera)
+Hostname: quickstart.cloudera
+Decommission Status : Normal
+Configured Capacity: 58531520512 (54.51 GB)
+DFS Used: 853868544 (814.31 MB)
+Non DFS Used: 11464970074 (10.68 GB)
+DFS Remaining: 46212681894 (43.04 GB)
+DFS Used%: 1.46%
+DFS Remaining%: 78.95%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 6
+Last contact: Mon Jul 04 05:46:18 PDT 2016
+-----------------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+16.a) Check safemode status.
+   b) Enter safemode and the leave safemode
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+$ hdfs dfsadmin -safemode status
+-------------------------------
+Usage: hdfs dfsadmin [-safemode enter | leave | get | wait]
+-------------------------------
+
+$ sudo -u hdfs hdfs dfsadmin -safemode enter
+-------------------------------
+Safe mode is ON
+-------------------------------
+
+$ sudo -u hdfs hdfs dfsadmin -safemode leave
+------------------------------
+Safe mode is OFF
+------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+17. Check service status
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+$for service in /etc/init.d/hadoop-hdfs-*;
+ do $service status;
+ done;
+----------------------------
+Hadoop datanode is running                                 [  OK  ]
+Hadoop journalnode is running                              [  OK  ]
+Hadoop namenode is running                                 [  OK  ]
+Hadoop secondarynamenode is running                        [  OK  ]
+-----------------------------
+
+$ for service in /etc/init.d/hadoop-mapreduce-*; do $service status; done;
+--------------------------
+Hadoop historyserver is running                            [  OK  ]
+--------------------------
+
+$for service in /etc/init.d/hadoop-yarn-*;
+ do $service status;
+ done;
+----------------------------
+$ for service in /etc/init.d/hadoop-yarn-*; do $service status; done;
+Hadoop nodemanager is running                              [  OK  ]
+Hadoop proxyserver is dead and pid file exists             [FAILED]
+Hadoop resourcemanager is running                          [  OK  ]
+----------------------------
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+17. Start all yarn services 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+(Root access is required)
+# for service in /etc/init.d/hadoop-yarn-*;
+> do $service restart;
+> done;
+-------------------------------------------
+stopping nodemanager
+Stopped Hadoop nodemanager:                                [  OK  ]
+starting nodemanager, logging to /var/log/hadoop-yarn/yarn-yarn-nodemanager-quickstart.cloudera.out
+Started Hadoop nodemanager:                                [  OK  ]
+no proxyserver to stop
+Stopped Hadoop proxyserver:                                [  OK  ]
+starting proxyserver, logging to /var/log/hadoop-yarn/yarn-yarn-proxyserver-quickstart.cloudera.out
+Started Hadoop proxyserver:                                [  OK  ]
+stopping resourcemanager
+Stopped Hadoop resourcemanager:                            [  OK  ]
+starting resourcemanager, logging to /var/log/hadoop-yarn/yarn-yarn-resourcemanager-quickstart.cloudera.out
+Started Hadoop resourcemanager:                            [  OK  ]
+[root@quickstart cloudera]# 
+
+-------------------------------------------
