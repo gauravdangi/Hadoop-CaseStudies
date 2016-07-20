@@ -1,0 +1,114 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Design a solution to incrementally download the data from table in a specific project.
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+mysql> create table Analysis1 as select * from analysis limit 15;
+
+mysql> drop analysis;
+
+mysql> select * from Analysis1;
++-------------+-----------------------------+---------------+----------------+
+| customer_id | customer_street             | customer_city | customer_state |
++-------------+-----------------------------+---------------+----------------+
+|           1 | 6303 Heather Plaza          | Brownsville   | TX             |
+|           2 | 9526 Noble Embers Ridge     | Littleton     | CO             |
+|           3 | 3422 Blue Pioneer Bend      | Caguas        | PR             |
+|           4 | 8324 Little Common          | San Marcos    | CA             |
+|           5 | 10 Crystal River Mall       | Caguas        | PR             |
+|           6 | 3151 Sleepy Quail Promenade | Passaic       | NJ             |
+|           7 | 9453 High Concession        | Caguas        | PR             |
+|           8 | 3047 Foggy Forest Plaza     | Lawrence      | MA             |
+|           9 | 3616 Quaking Street         | Caguas        | PR             |
+|          10 | 8598 Harvest Beacon Plaza   | Stafford      | VA             |
+|          11 | 3169 Stony Woods            | Caguas        | PR             |
+|          12 | 5594 Jagged Embers By-pass  | San Antonio   | TX             |
+|          13 | 7922 Iron Oak Gardens       | Caguas        | PR             |
+|          14 | 5666 Hazy Pony Square       | Pico Rivera   | CA             |
+|          15 | 673 Burning Glen            | Fontana       | CA             |
++-------------+-----------------------------+---------------+----------------+
+15 rows in set (0.00 sec)
+
+mysql> describe Analysis1;
++-----------------+--------------+------+-----+---------+-------+
+| Field           | Type         | Null | Key | Default | Extra |
++-----------------+--------------+------+-----+---------+-------+
+| customer_id     | int(11)      | NO   |     | 0       |       |
+| customer_street | varchar(255) | NO   |     | NULL    |       |
+| customer_city   | varchar(45)  | NO   |     | NULL    |       |
+| customer_state  | varchar(45)  | NO   |     | NULL    |       |
++-----------------+--------------+------+-----+---------+-------+
+
+
+-> Importing Analysis1 to HDFS
+
+$ sqoop import \
+ --connect jdbc:mysql://localhost/retail_db \
+ --username root --password cloudera \
+ --table Analysis1 --target-dir /user/cloudera/retail_db/analysis \
+ --split-by customer_id 
+
+-> Now updating Analysis1 
+
+mysql> insert into Analysis1(customer_id,customer_street,customer_city,customer_state) values(16,'785 Hazy Pony','Pico Rivera','CA');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into Analysis1(customer_id,customer_street,customer_city,customer_state) values(17,'795 Hazy Pony','Pico Rivera','CA');
+Query OK, 1 row affected (0.02 sec)
+
+
+mysql> select * from Analysis1;
++-------------+-----------------------------+---------------+----------------+
+| customer_id | customer_street             | customer_city | customer_state |
++-------------+-----------------------------+---------------+----------------+
+|           1 | 6303 Heather Plaza          | Brownsville   | TX             |
+|           2 | 9526 Noble Embers Ridge     | Littleton     | CO             |
+|           3 | 3422 Blue Pioneer Bend      | Caguas        | PR             |
+|           4 | 8324 Little Common          | San Marcos    | CA             |
+|           5 | 10 Crystal River Mall       | Caguas        | PR             |
+|           6 | 3151 Sleepy Quail Promenade | Passaic       | NJ             |
+|           7 | 9453 High Concession        | Caguas        | PR             |
+|           8 | 3047 Foggy Forest Plaza     | Lawrence      | MA             |
+|           9 | 3616 Quaking Street         | Caguas        | PR             |
+|          10 | 8598 Harvest Beacon Plaza   | Stafford      | VA             |
+|          11 | 3169 Stony Woods            | Caguas        | PR             |
+|          12 | 5594 Jagged Embers By-pass  | San Antonio   | TX             |
+|          13 | 7922 Iron Oak Gardens       | Caguas        | PR             |
+|          14 | 5666 Hazy Pony Square       | Pico Rivera   | CA             |
+|          15 | 673 Burning Glen            | Fontana       | CA             |
+|          16 | 785 Hazy Pony               | Pico Rivera   | CA             |
+|          17 | 795 Hazy Pony               | Pico Rivera   | CA             |
++-------------+-----------------------------+---------------+----------------+
+17 rows in set (0.00 sec)
+
+ Now updating in HDFS by appending records after customer_id 15
+
+$sqoop import \
+--connect jdbc:mysql://localhost/retail_db \
+--username root --password cloudera \
+--table Analysis1 --target-dir /user/cloudera/retail_db/analysis \
+--split-by customer_id \
+--incremental append \
+--check-cloumn customer_id \
+--last-value 15
+
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Initial or one time load scenario.
+Design a solution to download the data from all tables except dummy and test and load them into Hive.
+Create necessary tables in Hive.
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Importing all tables to hive except Analysis1 and cust that I created.
+
+$ sqoop import-all-tables --connect jdbc:mysql://localhost/retail_db \
+--username root --password cloudera \
+--exclude-tables Analysis1,cust \
+--hive-import
+
+
+
+
+
+
