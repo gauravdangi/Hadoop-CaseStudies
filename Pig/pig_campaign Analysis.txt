@@ -1,0 +1,306 @@
+CASE STUDY: CAMPAIGN ANALYSIS USING PIG ETL
+
+Background Information:
+Dualcore has recently started using online advertisements to attract new customers to our e-commerce site. Each of the two ad networks we use provides data about the ads they've placed. This includes the site where the ad was placed, the date when it was placed, what keywords triggered its display, whether the user clicked the ad, and per-click cost.
+
+Company-1 provided the data - ad_data1.txt
+comapny-2 provided the data - ad_data2.txt
+
+ETL - Extract actual data from HDFS
+    - Transform it and export to HDFS - PIG
+
+
+Unfortunately, the data from each network is in a different format. Each file also contains some invalid records. Before we can analyze the data, we must first correct these problems by using Pig to:
+	-filter invalid records
+	-Reorder fields
+	-Correct inconsistencies
+	-Write the corrected data to HDFS.
+
+hadoop fs -put /home/cloudera/
+1. change to the directory
+cd /home/cloudera/pig_etl
+
+2. Copy a small number of records from the input file to another file on the local file system.
+When you start Pig, you will run in local mode. For testing, you can work faster with small local files than large files in HDFS.
+
+head -n 25 cd /home/cloudera/training_materials/analyst/data/ad_data1.txt > sample1.txt
+
+pig -x local
+
+Grunt>$ data = LOAD 'sample1.txt';
+Grunt>$ DUMP data;
+
+Grunt>$ first_2_columns = LOAD 'sample1.txt' AS (keyword:chararray, campaign_id:chararray);
+
+Grunt>$ DUMP first_2_columns;
+Grunt>$ DESCRIBE first_2_columns;
+
+Grunt>$ DESCRIBE data;
+Grunt>$ QUIT;
+-----------------------------------------------------------------------------
+-- Data cleaning
+-----------------------------------------------------------------------------
+1. ad_data1.txt
+	a. Are the fileds in the correct order?
+	b. Are all the keywords now in uppercase?
+
+$ pig -x local first_etl.pig
+$ pig first_etl.pig
+
+--first_etl.pig
+data = LOAD 'sample1.txt' AS (keyword:chararray, 
+               campaign_id:chararray,
+               date:chararray, 
+               time:chararray,
+               display_site:chararray, 
+               was_clicked:int, 
+               cpc:int,
+               country:chararray, 
+               placement:chararray);
+
+usa_only = FILTER data BY country == 'USA';
+
+reordered = FOREACH usa_only GENERATE campaign_id, 
+               date,
+               time,
+               UPPER(TRIM(keyword)),
+               display_site,
+               placement,
+               was_clicked,
+               cpc,
+               'p1' as source;
+
+STORE reordered INTO '/user/cloudera/dualcore/ad_data1/';
+
+
+2. ad_data2.txt
+	a. Do you see any duplicate records?
+	b. Are the fields in the correct order?
+	c. Are all the keywords in uppercase?
+	d. Is the date field in the correct (MM/DD/YYYY) format?
+
+
+$ pig -x local second_etl.pig
+$ pig -x second_etl.pig
+
+--second_etl.pig
+data = LOAD '/user/cloudera/ad_data2.txt' USING PigStorage(',')
+            AS (campaign_id:chararray,
+                date:chararray, 
+                time:chararray,
+                display_site:chararray, 
+                placement:chararray,
+                was_clicked:int, 
+                cpc:int,
+                keyword:chararray);
+
+
+unique = DISTINCT data;
+
+reordered = FOREACH unique GENERATE campaign_id, 
+               REPLACE(date, '-', '/'),
+               time,
+               UPPER(TRIM(keyword)),
+               display_site,
+               placement,
+               was_clicked,
+               cpc,
+               'p2' as source;
+
+STORE reordered INTO '/user/cloudera/dualcore/ad_data2/';
+
+--Get the sample records as local files
+
+hadoop fs -cat /user/cloudera/dualcore/ad_data1/part* |head -n 100 > test_ad_data1.txt
+hadoop fs -cat /user/cloudera/dualcore/ad_data2/part* |head -n 100 > test_ad_data2.txt
+
+-------------------------------------------------------------------------------
+-- Analysis-1: Find low cost sites
+Both Ad networks charge us only when a user clicks on our ad. This is ideal for Dualcore since our goal is to bring new customers to our site. However, some sites and keywords are more efficient than others at attracting people interested in the new tablet we advertise. With this in mind, you will begin by identifying which sites have the lowest total cost
+-------------------------------------------------------------------------------
+-- A: This glob loads only the ad_data1 and ad_data2 directories
+data = LOAD '/user/cloudera/dualcore/ad_data[12]'  
+AS (campaign_id:chararray,
+             date:chararray, time:chararray,
+             keyword:chararray, display_site:chararray,   
+             placement:chararray, was_clicked:int, cpc:int, source:chararray);
+
+-- B: Includes only records where the ad was clicked
+clicked = FILTER data BY was_clicked == 1;
+
+
+-- C: Groups the data by the 'display_site' field
+grouped = GROUP clicked BY display_site;
+
+
+-- D: Creates relation with 'display_site' and sum of click cost
+totals = FOREACH grouped GENERATE group, SUM(clicked.cpc) AS cost;
+
+
+-- E: Sorts the new relation in ascending order of cost
+sorted = ORDER totals BY cost;
+
+
+-- F: Displays just the first three records to the screen
+top_three = LIMIT sorted 3;
+DUMP top_three;
+
+-------------------------------------------------------------------------------
+-- Analysis-2: Find High cost keywords
+The terms users type when doing searches may promt the site to display a dualcore advertisement. Since online advertisers compete for the same set of keywords, some them cost more than others. You will now write pig code to determine which keywords have been the most expensive for us overall
+-------------------------------------------------------------------------------
+			 
+-- Load only the ad_data1 and ad_data2 directories
+data = LOAD '/dualcore/ad_data[12]' AS (campaign_id:chararray,
+             date:chararray, time:chararray,
+             keyword:chararray, display_site:chararray,   
+             placement:chararray, was_clicked:int, cpc:int);
+
+-- Include only records where the ad was clicked
+clicked = FILTER data BY was_clicked == 1;
+
+
+-- A: Group the data by the 'keyword' field
+grouped = GROUP clicked BY (display_site, keyword);
+
+
+-- Create relation with 'keyword' and sum of click cost
+totals = FOREACH grouped GENERATE group, SUM(clicked.cpc) AS cost,
+             COUNT(clicked) as cnt, AVG(clicked.cpc) as avg_cost;
+
+Flat_t = foreach totals flatten(group);
+
+-- B: Sort the new relation in descending order of cost
+sorted = ORDER totals BY keyword , cost  DESC;
+
+
+-- C: Display just the first five records to the screen
+top_five = LIMIT sorted 5;
+DUMP top_five;
+
+
+-------------------------------------------------------------------------------
+-- Analysis-3: Total Click Count
+Calculate the total number of clicks our adds have received. Doing so will help our marketing director plan his/her next ad campaign budget
+-------------------------------------------------------------------------------
+-- Load only the ad_data1 and ad_data2 directories
+data = LOAD '/dualcore/ad_data[12]' AS (campaign_id:chararray,
+             date:chararray, time:chararray,
+             keyword:chararray, display_site:chararray,
+             placement:chararray, was_clicked:int, cpc:int);
+
+-- Include only records where the ad was clicked
+clicked = FILTER data BY was_clicked == 1;
+
+-- Group everything so we can call the aggregate function
+grouped = GROUP clicked ALL;
+
+-- Count the records (note that since no field should be
+-- null, then it should not matter which field we count)
+totals = FOREACH grouped GENERATE COUNT(clicked.cpc) as cnt, SUM(clicked.cpc) as cost;
+
+-- Display the result to the screen
+DUMP totals;
+
+
+-------------------------------------------------------------------------------
+-- Analysis-4: Project Next campaign cost
+When you reported the total number of clicks to our marketing director, he said that his goal is to get about three times that amount during the next campaign. Unfortunately, because the cost is based on the site and keyword, he doesn't know how much to budget for that camapign. He asked to help by estimating the worst case(most expensive case) cost based on 50,000 clicks. You will do this by finding the most expensive ad and then multiplying it by the number of clicks he wants to achieve in the next campaign
+-------------------------------------------------------------------------------
+-- Load only the ad_data1 and ad_data2 directories
+data = LOAD '/dualcore/ad_data[12]' AS (campaign_id:chararray,
+             date:chararray, time:chararray,
+             keyword:chararray, display_site:chararray,
+             placement:chararray, was_clicked:int, cpc:int);
+
+-- Group everything so we can call the aggregate function
+grouped = GROUP data ALL;
+
+-- Count the records (note that since no field should be
+-- null, then it should not matter which field we count)
+future_totals = FOREACH grouped GENERATE MAX(data.cpc) * 50000 as max;
+
+-- Display the result to the screen
+dump future_totals;
+
+
+-------------------------------------------------------------------------------
+-- Analysis-5: Highest ctr(click through rate) by keyword
+THe previous calculations gave us a rough idea about the success of ad campaign, but didn't account for the fact that some sites display our ads more than others. This makes it difficult to determine how effective our ads were by simply count the number of clicks on one site adn comparing it to the number of clicks on another site. One metric that would allow us to better make such comparisions is the click through rate. Simply the percentage of ads shown that users actually clicked , and can be calculated by dividing the number of clicks by the total number of ads shown.
+-------------------------------------------------------------------------------
+
+
+-- Load only the ad_data1 and ad_data2 directories
+data = LOAD '/dualcore/ad_data[12]' AS (campaign_id:chararray,
+             date:chararray, time:chararray,
+             keyword:chararray, display_site:chararray,
+             placement:chararray, was_clicked:int, cpc:int);
+
+grouped = GROUP data BY keyword;
+
+by_keyword = FOREACH grouped {
+  clicked = FILTER data BY was_clicked == 1;
+  total = COUNT(data.keyword);
+  GENERATE group, ((double)COUNT(clicked) / total) AS ctr;
+}
+
+-- sort the records in descending order of clickthrough rate
+sorted = ORDER by_keyword BY ctr DESC;
+
+-- show just the first three
+highest_three = LIMIT sorted 3;
+DUMP highest_three;
+
+
+-------------------------------------------------------------------------------
+-- Analysis-6: Lowest ctr(click through rate) by keyword
+-------------------------------------------------------------------------------
+-- Load only the ad_data1 and ad_data2 directories
+data = LOAD '/dualcore/ad_data[12]' AS (campaign_id:chararray,
+             date:chararray, time:chararray,
+             keyword:chararray, display_site:chararray,
+             placement:chararray, was_clicked:int, cpc:int);
+
+grouped = GROUP data BY display_site;
+
+by_site = FOREACH grouped {
+  -- Include only records where the ad was clicked
+  clicked = FILTER data BY was_clicked == 1;
+
+  -- count the number of records in this group
+  total = COUNT(data.display_site);
+
+  /* Calculate the click-through rate by dividing the 
+   * clicked ads in this group by the total number of ads
+   * in this group.
+   * 
+   * NOTE: the COUNT function returns a number of type
+   * long, so we must cast it to a double to avoid losing
+   * precision. Although both numbers in this formula are
+   * of type long, dividing a double by a long produces a
+   * double, so casting the second one is unnecessary in 
+   * this particular case.
+   */
+  GENERATE group, ((double)COUNT(clicked) / total) AS ctr;
+}
+
+-- sort the records in ascending order of clickthrough rate
+sorted = ORDER by_site BY ctr;
+
+-- show just the first three
+lowest_three = LIMIT sorted 3;
+DUMP lowest_three;
+
+--------------------------------------
+OTHER TASKS TO FINISH
+--------------------------------------
+CREATE PIG MACRO to 
+Calculate cnt, sum, avg, min, max, range, ctr etc.
+BY keyword
+BY week day/ week ends
+BY provider
+BY display site
+
+keyword_results = summary(keyword)
+display_results = summary(display_site)
+provider_results = summary(provider)
