@@ -1,5 +1,5 @@
 # Hadoop-CaseStudies
-Hadoop Case studies and projects 
+Hadoop Case studies and projects (HDFS, MapReduce, Sqoop, Flume, Pig, Hive, Hbase, Impala and Zookeeper)
 
 Hadoop makes it possible to run applications on systems with thousands of nodes involving thousands of terabytes. Its distributed file system facilitates rapid data transfer rates among nodes and allows the system to continue operating uninterrupted in case of a node failure. This approach lowers the risk of catastrophic system failure, even if a significant number of nodes become inoperative.
 
