@@ -1,6 +1,8 @@
+
+@Gaurav Dangi
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 1] Create Home Directory on Local File System under /home/cloudera 
- a. Name it as ìlocaldataî 
+ a. Name it as ‚Äúlocaldata‚Äù 
  b. Check and confirm the directory exists  
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -19,8 +21,8 @@ drwxr-xr-x   - cloudera cloudera          0 2016-06-25 06:56 user
 ----------------------------
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 2] Create another Directory on HDFS File System under /user.  
-a. Name it as ìhddataî 
-b. Create one more Directory below ìhddataî. Name this as ìinputî 
+a. Name it as ‚Äúhddata‚Äù 
+b. Create one more Directory below ‚Äúhddata‚Äù. Name this as ‚Äúinput‚Äù 
 c. Check and confirm the directory exists  
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -51,11 +53,11 @@ drwxr-xr-x   - cloudera supergroup          0 2016-07-04 04:24 /user/hddata/inpu
 --------------------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-3. Copy the provided file (ìnewstext.txtî) from your Windows Machine into the ìlocaldataî directory that you created in 
+3. Copy the provided file (‚Äúnewstext.txt‚Äù) from your Windows Machine into the ‚Äúlocaldata‚Äù directory that you created in 
 step 1. 
 
-4. Check and confirm the file is copied into the ìlocaldataî. 
-7. Copy ìnewstext.txtî from local directory to HDFS File System under /user/localdata/input. Confirm the file is copied. 
+4. Check and confirm the file is copied into the ‚Äúlocaldata‚Äù. 
+7. Copy ‚Äúnewstext.txt‚Äù from local directory to HDFS File System under /user/localdata/input. Confirm the file is copied. 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 Drag and drop to Desktop of Cloudera
@@ -116,7 +118,7 @@ Last contact: Mon Jul 04 04:48:57 PDT 2016
 ------------------------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-6. Check the displays sizes of files and directories under ì/userî on HDFS 
+6. Check the displays sizes of files and directories under ‚Äú/user‚Äù on HDFS 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 $ hadoop fs -du -h  /user
@@ -134,40 +136,40 @@ $ hadoop fs -du -h  /user
 -------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-8. See the content of the file ìnewstext.txtî. Also, see the last lines of the content in the file
+8. See the content of the file ‚Äúnewstext.txt‚Äù. Also, see the last lines of the content in the file
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 $ hadoop fs -cat /user/cloudera/localdata/news.txt
 -----------------Output------------------
-Two persons were arrested on Monday in connection with the Bangladeshís worst terror attack at a cafe in Dhaka in which 22 people, mostly foreigners, were brutally killed by suspected ISIS militants, as authorities stepped up probe into the international links of the hostage-takers.
+Two persons were arrested on Monday in connection with the Bangladesh‚Äôs worst terror attack at a cafe in Dhaka in which 22 people, mostly foreigners, were brutally killed by suspected ISIS militants, as authorities stepped up probe into the international links of the hostage-takers.
 
 Inspector General of Police (IGP) A.K.M. Shahidul Haque, however, did not disclose the identities of either of the detainees or where they were being kept.
 
 He said both of them were unwell and will be quizzed after their condition improves.
 
-ìOne of them is in hospital, the other is in custody,î he said.
+‚ÄúOne of them is in hospital, the other is in custody,‚Äù he said.
 
 Earlier, Prime Minister Sheikh Hasina and the Bangladesh Army said one terrorist was captured alive from the site of the attack. However, the identity of the suspect was not disclosed.
 
-ìThey (attackers) may have some contact with international terrorist groups,î he said.
+‚ÄúThey (attackers) may have some contact with international terrorist groups,‚Äù he said.
 
 Islamic State (IS) has claimed responsibility for the killing of the 20 hostages and two police officers during the 12-hour siege that ended after the Army stormed the Holey Artisan Bakery popular with expats in the diplomatic zone here, killing six attackers and capturing one alive.
 
 Hostages who were killed include 19-year-old Indian girl Tarishi Jain. Nine Italians, 7 Japanese, one American of Bangladeshi origin, and two Bangladeshis were also among the people who were killed.
 
-ìYou have seen the pictures of the slain militants supplied to the media, we have found out the background of four of them,î a senior police officer familiar with the investigation said, preferring anonymity.
+‚ÄúYou have seen the pictures of the slain militants supplied to the media, we have found out the background of four of them,‚Äù a senior police officer familiar with the investigation said, preferring anonymity.
 
 The official added that all the attackers were in their 20s. Four of them came from wealthy families and studied at elite schools and universities in Dhaka and abroad.
 
 One of the slain assaulters was studying in a Malaysian university, while his family said they had no idea that he returned home and took part in the attack.
 
-He said the fifth youth who hailed from a village in northwestern Bogra and studied in a madrassa there led the attackers during the Friday nightís massacre.
+He said the fifth youth who hailed from a village in northwestern Bogra and studied in a madrassa there led the attackers during the Friday night‚Äôs massacre.
 
-ìThis Khairul (of Bogra) was wanted by police for the past seven months for three deadly militant attacks in northwestern region...We understand it is him who led the Holey Artisan restaurant attack on that night,î the official said.
+‚ÄúThis Khairul (of Bogra) was wanted by police for the past seven months for three deadly militant attacks in northwestern region...We understand it is him who led the Holey Artisan restaurant attack on that night,‚Äù the official said.
 
 According to mass circulation Prothom Alo Khairul was missing for the past several months. Bogra police had detained his parents for questioning.
 
-One of slain attackers, private BRAC university student Rohan Imtiaz, was the son of a leader of Prime Minister Sheikh Hasinaís ruling Awami League, while his mother was a teacher Dhakaís posh Scholastica School.
+One of slain attackers, private BRAC university student Rohan Imtiaz, was the son of a leader of Prime Minister Sheikh Hasina‚Äôs ruling Awami League, while his mother was a teacher Dhaka‚Äôs posh Scholastica School.
 
 The family reported him missing in December last year.
 
@@ -178,13 +180,13 @@ Keywords: Dhaka terror attack, Tarishi Jain, terrorism, Holey Artisan Bakery, O'
 
 $ hadoop fs -tail /user/cloudera/localdata/news.txt
 -------------------Output-----------------------
-ckers during the Friday nightís massacre.
+ckers during the Friday night‚Äôs massacre.
 
-ìThis Khairul (of Bogra) was wanted by police for the past seven months for three deadly militant attacks in northwestern region...We understand it is him who led the Holey Artisan restaurant attack on that night,î the official said.
+‚ÄúThis Khairul (of Bogra) was wanted by police for the past seven months for three deadly militant attacks in northwestern region...We understand it is him who led the Holey Artisan restaurant attack on that night,‚Äù the official said.
 
 According to mass circulation Prothom Alo Khairul was missing for the past several months. Bogra police had detained his parents for questioning.
 
-One of slain attackers, private BRAC university student Rohan Imtiaz, was the son of a leader of Prime Minister Sheikh Hasinaís ruling Awami League, while his mother was a teacher Dhakaís posh Scholastica School.
+One of slain attackers, private BRAC university student Rohan Imtiaz, was the son of a leader of Prime Minister Sheikh Hasina‚Äôs ruling Awami League, while his mother was a teacher Dhaka‚Äôs posh Scholastica School.
 
 The family reported him missing in December last year.
 
@@ -194,7 +196,7 @@ Keywords: Dhaka terror attack, Tarishi Jain, terrorism, Holey Artisan Bakery, O'
 ------------------------------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-9. Now, Copy ìnews.txtî in your ìinputí directory with another name ìnewnews.txtî
+9. Now, Copy ‚Äúnews.txt‚Äù in your ‚Äúinput‚Äô directory with another name ‚Äúnewnews.txt‚Äù
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 $ hadoop fs -cp /user/cloudera/localdata/news.txt /user/hddata/input/news.txt
@@ -206,7 +208,7 @@ Found 1 items
 ----------------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-10.  Change Ownership from ìclouderaî to ìhdfsî. Change it back to ìclouderaî 
+10.  Change Ownership from ‚Äúcloudera‚Äù to ‚Äúhdfs‚Äù. Change it back to ‚Äúcloudera‚Äù 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 $ hadoop fs -ls /user/hddata/input
 ---------------------------------
@@ -234,7 +236,7 @@ Found 1 items
 --------------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-14. Change group ownership from ìsupergroupî to group ìclouderaî 
+14. Change group ownership from ‚Äúsupergroup‚Äù to group ‚Äúcloudera‚Äù 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 $ sudo -u hdfs hadoop fs -chgrp cloudera /user/hddata/input/news.txt
@@ -390,3 +392,4 @@ Started Hadoop resourcemanager:                            [  OK  ]
 [root@quickstart cloudera]# 
 
 -------------------------------------------
+@Gaurav Dangi
