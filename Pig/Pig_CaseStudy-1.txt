@@ -1,0 +1,327 @@
+Loading csv file
+
+grunt> a = LOAD '/home/cloudera/Desktop/NYSE/NYSE.txt' 
+       as (exchange:chararray,stock_symbol:chararray,date:chararray,dividents:float);
+
+grunt> DESCRIBE a;
+----------------
+a: {exchange: chararray,stock_symbol: chararray,date: int,dividents: float}
+----------------
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Load the NYSE_daily_prices_A.csv file into PIG as “STOCK_A” using the below structure and 
+Understand the structure of loaded table using describe command.  
+Structure of NYSE_daily_prices_A.csv 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+grunt> STOCK_A = a;
+
+grunt> DESCRIBE STOCK_A;
+
+----------
+2016-07-23 04:34:51,720 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - fs.default.name is deprecated. Instead, use fs.defaultFS
+2016-07-23 04:34:51,720 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2016-07-23 04:34:51,721 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - io.bytes.per.checksum is deprecated. Instead, use dfs.bytes-per-checksum
+STOCK_A: {exchange: chararray,stock_symbol: chararray,date: int,dividents: float}
+----------
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Create a new table “B” as limiting the observations of 100 from table “STOCK_A” and print the table using dump command. 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+grunt> b = Limit STOCK_A 50;
+
+grunt> dump b;
+
+--------------
+(NYSE,AIT,1997-11-12,0.05333)
+(NYSE,AIT,1998-02-11,0.05333)
+(NYSE,AIT,1998-05-13,0.05333)
+(NYSE,AIT,1998-08-12,0.05333)
+(NYSE,AIT,1998-11-12,0.05333)
+(NYSE,AIT,1999-02-10,0.05333)
+(NYSE,AIT,1999-05-12,0.05333)
+(NYSE,AIT,1999-08-12,0.05333)
+(NYSE,AIT,1999-11-10,0.05333)
+(NYSE,AIT,2000-02-10,0.05333)
+(NYSE,AIT,2000-05-11,0.05333)
+(NYSE,AIT,2000-08-11,0.05333)
+(NYSE,AIT,2000-11-13,0.05333)
+(NYSE,AIT,2001-02-12,0.05333)
+(NYSE,AIT,2001-05-11,0.05333)
+(NYSE,AIT,2001-08-13,0.05333)
+(NYSE,AIT,2001-11-13,0.05333)
+(NYSE,AIT,2002-02-12,0.05333)
+(NYSE,AIT,2002-05-13,0.05333)
+(NYSE,AIT,2002-08-13,0.05333)
+(NYSE,AIT,2002-11-13,0.05333)
+(NYSE,AIT,2003-01-29,0.05333)
+(NYSE,AIT,2003-05-13,0.05333)
+(NYSE,AIT,2003-08-13,0.05333)
+(NYSE,AIT,2003-11-12,0.05333)
+(NYSE,AIT,2004-02-11,0.05333)
+(NYSE,AIT,2004-05-12,0.05333)
+(NYSE,AIT,2004-08-11,0.06222)
+(NYSE,AIT,2004-11-10,0.06222)
+(NYSE,AIT,2005-02-11,0.08)
+(NYSE,AIT,2005-05-12,0.08)
+(NYSE,AIT,2005-08-17,0.08)
+(NYSE,AIT,2005-11-10,0.1)
+(NYSE,AIT,2006-02-13,0.1)
+(NYSE,AIT,2006-05-11,0.12)
+(NYSE,AIT,2006-08-11,0.12)
+(NYSE,AIT,2006-11-13,0.12)
+(NYSE,AIT,2007-02-13,0.12)
+(NYSE,AIT,2007-05-11,0.12)
+(NYSE,AIT,2007-08-13,0.15)
+(NYSE,AIT,2007-11-13,0.15)
+(NYSE,AIT,2008-02-13,0.15)
+(NYSE,AIT,2008-05-13,0.15)
+(NYSE,AIT,2008-08-13,0.15)
+(NYSE,AIT,2008-11-12,0.15)
+(NYSE,AIT,2009-02-11,0.15)
+(NYSE,AIT,2009-05-13,0.15)
+(NYSE,AIT,2009-08-12,0.15)
+(NYSE,AIT,2009-11-12,0.15)
+
+--------------
+
+grunt> Describe b;
+
+---------------
+
+b: {exchange: chararray,stock_symbol: chararray,date: chararray,divident: float}
+---------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ Create a new table “C” as limiting the columns of stock symbol and date. Print the table using dump command
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+grunt> c = foreach b generate stock_symbol,date;
+grunt> describe c;
+---------------
+c: {stock_symbol: chararray,date: chararray}
+---------------
+
+grunt> dump c;
+
+--------------------------
+(AIT,1997-11-12)
+(AIT,1998-02-11)
+(AIT,1998-05-13)
+(AIT,1998-08-12)
+(AIT,1998-11-12)
+(AIT,1999-02-10)
+(AIT,1999-05-12)
+(AIT,1999-08-12)
+(AIT,1999-11-10)
+(AIT,2000-02-10)
+(AIT,2000-05-11)
+(AIT,2000-08-11)
+(AIT,2000-11-13)
+(AIT,2001-02-12)
+(AIT,2001-05-11)
+(AIT,2001-08-13)
+(AIT,2001-11-13)
+(AIT,2002-02-12)
+(AIT,2002-05-13)
+(AIT,2002-08-13)
+(AIT,2002-11-13)
+(AIT,2003-01-29)
+(AIT,2003-05-13)
+(AIT,2003-08-13)
+(AIT,2003-11-12)
+(AIT,2004-02-11)
+(AIT,2004-05-12)
+(AIT,2004-08-11)
+(AIT,2004-11-10)
+(AIT,2005-02-11)
+(AIT,2005-05-12)
+(AIT,2005-08-17)
+(AIT,2005-11-10)
+(AIT,2006-02-13)
+(AIT,2006-05-11)
+(AIT,2006-08-11)
+(AIT,2006-11-13)
+(AIT,2007-02-13)
+(AIT,2007-05-11)
+(AIT,2007-08-13)
+(AIT,2007-11-13)
+(AIT,2008-02-13)
+(AIT,2008-05-13)
+(AIT,2008-08-13)
+(AIT,2008-11-12)
+(AIT,2009-02-11)
+(AIT,2009-05-13)
+(AIT,2009-08-12)
+(AIT,2009-11-12)
+(stock_symbol,date)
+
+--------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  Store the table “C” (say ‘output/C’) 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+grunt> store c into '/home/cloudera/Desktop/cOutput';
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ Load the NYSE_dividends_A.csv file into PIG as “DIV_A” using the below structure and 
+ Understand the structure of loaded table using describe command.  
+ Structure of NYSE_dividends_A.csv:-
+  (exchange:chararray, symbol:chararray, date:chararray, dividend:float) 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+grunt> DIV_A = LOAD '/home/cloudera/Desktop/NYSE/NYSE_div.txt' as 
+       (exchange:chararray,stock_symbol:chararray,date:chararray,dividents:float);
+
+grunt> describe DIV_A;
+--------------------------------
+DIV_A: {exchange: chararray,stock_symbol: chararray,date: chararray,dividents: float}
+--------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ Join the STOCK_A and DIV_A tables into STOCK_C using common variables symbol. 
+ Prints the output using describe/dump commands. 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+grunt> STOCK_C = join STOCK_A by (stock_symbol,date), DIV_A by (stock_symbol,date);
+
+grunt> describe STOCK_C;
+-------------------------
+STOCK_C: {STOCK_A::exchange: chararray,STOCK_A::stock_symbol: chararray,STOCK_A::date: chararray,STOCK_A::dividends: float,
+DIV_A::exchange: chararray,DIV_A::stock_symbol: chararray,DIV_A::date: chararray,DIV_A::dividents: float}
+-------------------------
+
+grunt> dump STOCK_C;
+---------------------------
+HadoopVersion	PigVersion	UserId	StartedAt	FinishedAt	Features
+2.6.0-cdh5.7.0	0.12.0-cdh5.7.0	cloudera	2016-07-31 07:34:23	2016-07-31 07:34:26	HASH_JOIN
+
+Success!
+
+Job Stats (time in seconds):
+JobId	Alias	Feature	Outputs
+job_local1231689059_0011	DIV_A,STOCK_A,STOCK_C	HASH_JOIN	file:/tmp/temp1517452115/tmp-255584407,
+
+Input(s):
+Successfully read records from: "/home/cloudera/Desktop/NYSE/NYSE_div.txt"
+Successfully read records from: "/home/cloudera/Desktop/NYSE/NYSE.txt"
+
+Output(s):
+Successfully stored records in: "file:/tmp/temp1517452115/tmp-255584407"
+
+Job DAG:
+job_local1231689059_0011
+
+
+2016-07-31 07:34:26,027 [main] INFO  org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceLauncher - Success!
+2016-07-31 07:34:26,028 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - fs.default.name is deprecated. Instead, use fs.defaultFS
+2016-07-31 07:34:26,028 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2016-07-31 07:34:26,029 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - io.bytes.per.checksum is deprecated. Instead, use dfs.bytes-per-checksum
+2016-07-31 07:34:26,030 [main] WARN  org.apache.pig.data.SchemaTupleBackend - SchemaTupleBackend has already been initialized
+2016-07-31 07:34:26,095 [main] INFO  org.apache.hadoop.mapreduce.lib.input.FileInputFormat - Total input paths to process : 1
+2016-07-31 07:34:26,095 [main] INFO  org.apache.pig.backend.hadoop.executionengine.util.MapRedUtil - Total input paths to process : 1
+
+--------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ Sort the STOCK_A table using symbol in ascending order and date in descending order and print the output. 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+grunt> ORDER_A = order STOCK_A by stock_symbol,date desc;
+
+---------------------------------
+(NYSE,AWF,1996-03-06,0.118,,,)
+(NYSE,AWF,1996-01-31,0.118,,,)
+(NYSE,AWF,1996-01-03,0.118,,,)
+(NYSE,AWF,1995-12-04,0.118,,,)
+(NYSE,AWF,1995-11-07,0.118,,,)
+(NYSE,AWF,1995-10-02,0.118,,,)
+(NYSE,AWF,1995-08-28,0.108,,,)
+(NYSE,AKS,2009-11-10,0.05,,,)
+(NYSE,AKS,2009-08-12,0.05,,,)
+(NYSE,AKS,2009-05-13,0.05,,,)
+(NYSE,AKS,2009-02-11,0.05,,,)
+(NYSE,AKS,2008-11-12,0.05,,,)
+(NYSE,AKS,2008-08-13,0.05,,,)
+(NYSE,AKS,2008-05-14,0.05,,,)
+(NYSE,AKS,2008-02-13,0.05,,,)
+(NYSE,AKS,2001-04-27,0.063,,,)
+(NYSE,AKS,2001-01-30,0.063,,,)
+(NYSE,AKS,2000-10-23,0.125,,,)
+(NYSE,AKS,2000-07-24,0.125,,,)
+(NYSE,AKS,2000-04-28,0.125,,,)
+(NYSE,AKS,2000-01-31,0.125,,,)
+(NYSE,AKS,1999-10-19,0.125,,,)
+(NYSE,AKS,1999-07-22,0.125,,,)
+(NYSE,AKS,1999-04-21,0.125,,,)
+(NYSE,AKS,1999-02-01,0.125,,,)
+(NYSE,AKS,1998-10-19,0.125,,,)
+(NYSE,AKS,1998-04-17,0.125,,,)
+(NYSE,AKS,1998-01-30,0.125,,,)
+(NYSE,AKS,1997-10-17,0.125,,,)
+(NYSE,AKS,1997-07-18,0.1,,,)
+(NYSE,AKS,1997-04-18,0.1,,,)
+(NYSE,AKS,1997-02-03,0.1,,,)
+(NYSE,AKS,1996-10-17,0.1,,,)
+(NYSE,AKS,1996-07-18,0.075,,,)
+(NYSE,AFC,2009-12-29,0.43,,,)
+(NYSE,AFC,2009-09-29,0.43,,,)
+(NYSE,AFC,2009-06-29,0.43,,,)
+(NYSE,AFC,2009-03-30,0.43,,,)
+(NYSE,AFC,2008-12-29,0.43,,,)
+(NYSE,AFC,2008-09-29,0.43,,,)
+(NYSE,AFC,2008-06-27,0.43,,,)
+(NYSE,AFC,2008-03-28,0.43,,,)
+(NYSE,AFC,2007-12-27,0.43,,,)
+(NYSE,AFC,2007-09-27,0.43,,,)
+(NYSE,AFC,2007-06-27,0.511,,,)
+(NYSE,AON,2010-01-28,0.15,,,)
+(NYSE,AON,2009-10-29,0.15,,,)
+(NYSE,AON,2009-07-30,0.15,,,)
+(NYSE,AON,2009-04-29,0.15,,,)
+(NYSE,AON,2009-01-29,0.15,,,)
+---------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Create new table “Filter_A” from DIV_A with filter condition symbol=='AZZ' 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+grunt> FILTER_A = FILTER DIV_A BY stock_symbol=='AZZ';
+grunt> DESCRIBE FILTER_A;
+---------------------------------
+FILTER_A: {exchange: chararray,stock_symbol: chararray,date: chararray,dividents: float}
+---------------------------------
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ From Filter_A table, Find maximum dividend given by company “AZZ’. 
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+WE NEED TO GROUP FIRST
+
+grunt> GRP = group FILTER_A ALL;
+grunt> maxF = foreach GRP GENERATE MAX(FILTER_A.dividents) as max_div;
+grunt> dump maxF;
+------------------------------
+Output(s):
+Successfully stored records in: "file:/tmp/temp1517452115/tmp1738863504"
+
+Job DAG:
+job_local1038071811_0031
+
+2016-07-31 10:00:36,448 [main] INFO  org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceLauncher - Success!
+2016-07-31 10:00:36,448 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - fs.default.name is deprecated. Instead, use fs.defaultFS
+2016-07-31 10:00:36,448 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2016-07-31 10:00:36,448 [main] INFO  org.apache.hadoop.conf.Configuration.deprecation - io.bytes.per.checksum is deprecated. Instead, use dfs.bytes-per-checksum
+2016-07-31 10:00:36,449 [main] WARN  org.apache.pig.data.SchemaTupleBackend - SchemaTupleBackend has already been initialized
+2016-07-31 10:00:36,457 [main] INFO  org.apache.hadoop.mapreduce.lib.input.FileInputFormat - Total input paths to process : 1
+2016-07-31 10:00:36,457 [main] INFO  org.apache.pig.backend.hadoop.executionengine.util.MapRedUtil - Total input paths to process : 1
+------------------------------
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ From Filter_A table, Find minimum dividend given by company “AZZ’
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+minF = foreach GRP GENERATE MIN(FILTER_A.dividents) as min_div;
+dump minF;
