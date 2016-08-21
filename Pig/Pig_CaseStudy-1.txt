@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 ---------------------------
+=======
+>>>>>>> origin/master
 -----------------------------------
 # Word count problem
 Lines = LOAD '/user/cloudera/data2/a.txt' AS (line:chararray);
@@ -6,7 +9,11 @@ words = FOREACH lines GENERATE FLATTEN(TOKENIZE(line)) as word;
 grouped = GROUP words BY word;
 wordcount = FOREACH grouped GENERATE group, COUNT(words);
 ------------------------------------
+<<<<<<< HEAD
 ---------------------------
+=======
+
+>>>>>>> origin/master
 Loading csv file
 
 grunt> a = LOAD '/home/cloudera/Desktop/NYSE/NYSE.txt' 
@@ -17,7 +24,7 @@ grunt> DESCRIBE a;
 a: {exchange: chararray,stock_symbol: chararray,date: int,dividents: float}
 ----------------
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-Load the NYSE_daily_prices_A.csv file into PIG as “STOCK_A” using the below structure and 
+Load the NYSE_daily_prices_A.csv file into PIG as â€œSTOCK_Aâ€ using the below structure and 
 Understand the structure of loaded table using describe command.  
 Structure of NYSE_daily_prices_A.csv 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -32,7 +39,7 @@ grunt> DESCRIBE STOCK_A;
 STOCK_A: {exchange: chararray,stock_symbol: chararray,date: int,dividents: float}
 ----------
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-Create a new table “B” as limiting the observations of 100 from table “STOCK_A” and print the table using dump command. 
+Create a new table â€œBâ€ as limiting the observations of 100 from table â€œSTOCK_Aâ€ and print the table using dump command. 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 grunt> b = Limit STOCK_A 50;
@@ -100,7 +107,7 @@ b: {exchange: chararray,stock_symbol: chararray,date: chararray,divident: float}
 ---------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- Create a new table “C” as limiting the columns of stock symbol and date. Print the table using dump command
+ Create a new table â€œCâ€ as limiting the columns of stock symbol and date. Print the table using dump command
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 grunt> c = foreach b generate stock_symbol,date;
@@ -166,14 +173,14 @@ grunt> dump c;
 --------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  Store the table “C” (say ‘output/C’) 
+  Store the table â€œCâ€ (say â€˜output/Câ€™) 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 grunt> store c into '/home/cloudera/Desktop/cOutput';
 
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- Load the NYSE_dividends_A.csv file into PIG as “DIV_A” using the below structure and 
+ Load the NYSE_dividends_A.csv file into PIG as â€œDIV_Aâ€ using the below structure and 
  Understand the structure of loaded table using describe command.  
  Structure of NYSE_dividends_A.csv:-
   (exchange:chararray, symbol:chararray, date:chararray, dividend:float) 
@@ -292,7 +299,7 @@ grunt> ORDER_A = order STOCK_A by stock_symbol,date desc;
 ---------------------------------
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-Create new table “Filter_A” from DIV_A with filter condition symbol=='AZZ' 
+Create new table â€œFilter_Aâ€ from DIV_A with filter condition symbol=='AZZ' 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 grunt> FILTER_A = FILTER DIV_A BY stock_symbol=='AZZ';
@@ -303,7 +310,7 @@ FILTER_A: {exchange: chararray,stock_symbol: chararray,date: chararray,dividents
 
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- From Filter_A table, Find maximum dividend given by company “AZZ’. 
+ From Filter_A table, Find maximum dividend given by company â€œAZZâ€™. 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 WE NEED TO GROUP FIRST
@@ -329,7 +336,7 @@ job_local1038071811_0031
 
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- From Filter_A table, Find minimum dividend given by company “AZZ’
+ From Filter_A table, Find minimum dividend given by company â€œAZZâ€™
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 minF = foreach GRP GENERATE MIN(FILTER_A.dividents) as min_div;
