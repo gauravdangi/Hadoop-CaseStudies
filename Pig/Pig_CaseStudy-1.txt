@@ -1,3 +1,12 @@
+---------------------------
+-----------------------------------
+# Word count problem
+Lines = LOAD '/user/cloudera/data2/a.txt' AS (line:chararray);
+words = FOREACH lines GENERATE FLATTEN(TOKENIZE(line)) as word;
+grouped = GROUP words BY word;
+wordcount = FOREACH grouped GENERATE group, COUNT(words);
+------------------------------------
+---------------------------
 Loading csv file
 
 grunt> a = LOAD '/home/cloudera/Desktop/NYSE/NYSE.txt' 
