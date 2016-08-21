@@ -1,12 +1,27 @@
 hive> CREATE TABLE NYSE_A(stock_exchange STRING,stock_symbol STRING,date STRING,stock_price_open double,
-    >stock_price_high double,stock_price_low double,stock_price_close double,
-    >stock_volume double,stock_price_adj_close double) row format delimited fields terminated by ','
-    >stored as textfile;
+     stock_price_high double,stock_price_low double,stock_price_close double,
+     stock_volume double,stock_price_adj_close double) row format delimited fields terminated by ','
+     stored as textfile;
 
 hive> load data local inpath '/home/cloudera/Desktop/NYSE/NYSE_daily_prices_Q.txt' into table NYSE_A;
 
-hive> select * from NYSE_A limit 10;
+hive> DESCRIBE NYSE_A;
+--------------------
+OK
+stock_exchange      	string              	                    
+stock_symbol        	string              	                    
+date                	string              	                    
+stock_price_open    	double              	                    
+stock_price_high    	double              	                    
+stock_price_low     	double              	                    
+stock_price_close   	double              	                    
+stock_volume        	double              	                    
+stock_price_adj_close	double              	                    
+Time taken: 0.348 seconds, Fetched: 9 row(s)
 -----------------
+
+hive> select * from NYSE_A limit 10;
+------------------
 OK
 NYSE	QTM	2010-02-08	2.37	2.42	2.29	2.36	3013600.0	2.36
 NYSE	QTM	2010-02-05	2.38	2.5	2.34	2.41	2687600.0	2.41
@@ -20,24 +35,39 @@ NYSE	QTM	2010-01-27	3.03	3.1	2.99	3.03	2431900.0	3.03
 NYSE	QTM	2010-01-26	3.07	3.18	3.0	3.03	4027600.0	3.03
 ------------------
 
-hive> select DISTINCT(stock_symbol) from NYSE_A;
+hive> select count(*) from nyse_a;
 -------------------
-Total MapReduce CPU Time Spent: 3 seconds 730 msec
-QRR  <--
-QTM  <--
-QXM  <--
-Time taken: 53.287 seconds, Fetched: 3 row(s)
+3598 <--
+Time taken: 47.523 seconds, Fetched: 1 row(s)
 -------------------
 
+hive> select DISTINCT(stock_symbol) from NYSE_A;
+-------------------
+CPU Time Spent: 4 seconds 20 msec
+QRR <--
+QTM <--
+QXM <--
+Time taken: 37.454 seconds, Fetched: 3 row(s)
+-------------------
+
+hive> SELECT stock_symbol,MAX(stock_volume) from NYSE_A group by stock_symbol;
+-----------------------------
+Total MapReduce CPU Time Spent: 4 seconds 280 msec
+QRR	4050500.0
+QTM	2.02265E7
+QXM	4536700.0
+Time taken: 35.848 seconds, Fetched: 3 row(s)
+-----------------------------
+--------------------------------PARTIONING AND BUCKETING NYSE_A------------------------------------------
 # Now we will partition NYSE_A by stock_symbol and perform bucketing on the basis of stock_volume.
 
 hive> CREATE TABLE NYSE_NEW(stock_exchange STRING,date STRING,stock_price_open double,
-    > stock_price_high double,stock_price_low double,stock_price_close double,
-    > stock_volume double,stock_price_adj_close double)
-    > PARTITIONED BY(stock_symbol STRING)
-    > CLUSTERED BY(stock_volume) SORTED BY (stock_volume ASC) INTO 5 BUCKETS
-    > row format delimited fields terminated by ','
-    > stored as textfile;
+      stock_price_high double,stock_price_low double,stock_price_close double,
+      stock_volume double,stock_price_adj_close double)
+      PARTITIONED BY(stock_symbol STRING)
+      CLUSTERED BY(stock_volume) SORTED BY (stock_volume ASC) INTO 5 BUCKETS
+      row format delimited fields terminated by ','
+      stored as textfile;
 
 (Dynamic Partition Insert)
 # Before dynamic inserting we need to set some values
@@ -48,10 +78,30 @@ hive> set hive.enforce.bucketing=true;
 
 # Now let's insert the data(Dynamic)
 hive> FROM NYSE_A n INSERT OVERWRITE TABLE NYSE_NEW PARTITION(stock_symbol)
-    > select n.stock_exchange,n.date,n.stock_price_open,n.stock_price_high,n.stock_price_low,n.stock_price_close,
-    > n.stock_volume,n.stock_price_adj_close,n.stock_symbol DISTRIBUTE BY stock_symbol;
+      select n.stock_exchange,n.date,n.stock_price_open,n.stock_price_high,n.stock_price_low,n.stock_price_close,
+      n.stock_volume,n.stock_price_adj_close,n.stock_symbol DISTRIBUTE BY stock_symbol;
 
-# Now we can perform HQL queries efficiently
+# Now we can perform HQL queries efficiently(Query processing time is less)
+
+hive> DESCRIBE NYSE_NEW;
+-------------------------------------------
+OK
+stock_exchange      	string              	                    
+date                	string              	                    
+stock_price_open    	double              	                    
+stock_price_high    	double              	                    
+stock_price_low     	double              	                    
+stock_price_close   	double              	                    
+stock_volume        	double              	                    
+stock_price_adj_close	double              	                    
+stock_symbol        	string              	                    
+	 	 
+# Partition Information	 	 
+# col_name            	data_type           	comment             
+	 	 
+stock_symbol        	string              	                    
+Time taken: 0.214 seconds, Fetched: 14 row(s)
+-----------------------------------------------
 
 hive> select * from NYSE_NEW limit 25;
 ----------------------------------------------
@@ -84,12 +134,29 @@ NYSE	2007-10-18	8.83	9.03	8.7	8.96	18200.0	8.96	QRR
 Time taken: 0.24 seconds, Fetched: 25 row(s)
 ----------------------------------------------
 
+hive> select count(*) from NYSE_NEW;
+--------------------
+3598 <--
+Time taken: 39.775 seconds, Fetched: 1 row(s)
+--------------------
+
 hive> select distinct(stock_symbol) from NYSE_NEW;
 ------------------------------
+Total MapReduce CPU Time Spent: 3 seconds 540 msec
 QRR
 QTM
 QXM
-Time taken: 44.797 seconds, Fetched: 3 row(s)
+Time taken: 37.117 seconds, Fetched: 3 row(s)
 ------------------------------
-# Query completed in 44.797 seconds where earlier it was completed in 53.287 seconds. 
+# Query completed in total 37.117 seconds(CPU Time Spent: 3 seconds 540 msec)
+# Where earlier(without partitioning & bucketing) it was completed in 37.454 seconds(CPU Time Spent:4 seconds 20 msec). 
 # Therefore partioning and bucketing table increases speed and more efficient
+
+hive> SELECT stock_symbol,MAX(stock_volume) from NYSE_NEW group by stock_symbol;
+-----------------------------------
+Total MapReduce CPU Time Spent: 4 seconds 100 msec
+QRR	4050500.0
+QTM	2.02265E7
+QXM	4536700.0
+Time taken: 37.269 seconds, Fetched: 3 row(s)
+-----------------------------------
